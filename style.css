@@ -1,0 +1,11 @@
+body {
+  margin: 0;
+  background: transparent;
+  overflow: hidden;
+}
+#pria {
+  width: 950px;
+  height: 950px;
+  background: url('./assets/pria/pria_neutral.jpg') no-repeat center center;
+  background-size: contain;
+}

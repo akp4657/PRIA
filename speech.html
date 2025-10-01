@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      overflow: hidden !important;
+    }
+
+    #bubble {
+      position: relative;
+      display: inline-block;
+      max-width: 500px;
+      padding: 10px 15px;
+      background: #f0f0f0;
+      border: 2px solid black;
+      box-shadow: 2px 2px 0 #000;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 20px;
+      font-weight: bold;
+      line-height: 1.2;
+      color: black;
+      white-space: normal;
+      word-wrap: break-word;
+      border-radius: 8px;
+      overflow: visible;
+      margin-bottom: 16px;
+    }
+
+    
+    #bubble::after {
+      content: "";
+      position: absolute;
+      bottom: -12px; /* below the bubble */
+      left: 25%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top: 12px solid #f0f0f0; /* same color as bubble background */
+      filter: drop-shadow(1px 1px 0 black); /* optional shadow */
+    }
+
+    #bubble::before {
+      content: "";
+      position: absolute;
+      bottom: -14px; /* below the bubble, slightly lower than ::after */
+      left: 25%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 11px solid transparent;
+      border-right: 11px solid transparent;
+      border-top: 13px solid black; /* black outline for the arrow */
+    }
+
+
+    @keyframes glitch-out {
+      0% {
+        transform: translate(0, 0) scale(1);
+        filter: none;
+        opacity: 1;
+      }
+      20% {
+        transform: translate(-1px, 1px) scale(1.01);
+        filter: contrast(150%) brightness(120%) hue-rotate(20deg);
+      }
+      40% {
+        transform: translate(2px, -2px) scale(1.03);
+        filter: blur(1px) brightness(200%);
+      }
+      60% {
+        transform: translate(-1px, 0px) scale(0.98);
+        filter: grayscale(100%) contrast(200%);
+      }
+      80% {
+        transform: translate(2px, 2px) scale(1.02);
+        filter: invert(1);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(0.95);
+        filter: none;
+      }
+    }
+
+    .glitch-out {
+      animation: glitch-out 0.6s ease-in-out forwards;
+    }
+  </style>
+</head>
+<body>
+  <div id="bubble">...</div>
+
+  <script>
+    const bubble = document.getElementById('bubble');
+
+    window.electronAPI?.onMessage?.((_, text) => {
+      bubble.textContent = text;
+      bubble.style.opacity = '1';
+      bubble.style.display = 'inline-block';
+
+      requestAnimationFrame(() => {
+        const width = bubble.scrollWidth + 24;
+        const height = bubble.scrollHeight + 34;
+
+        window.electronAPI.resizeWindow({ width, height });
+
+        // After resizing, send height to Electron so it positions above PRIA
+        window.electronAPI.sendHeight(height);
+
+        setTimeout(() => {
+          bubble.classList.add('glitch-out');
+          setTimeout(() => {
+            bubble.style.display = 'none';
+            bubble.classList.remove('glitch-out');
+          }, 600);
+        }, 5000);
+      });
+    });
+
+  </script>
+
+</body>
+</html>

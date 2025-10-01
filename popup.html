@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Popup</title>
+  <style>
+    @font-face {
+      font-family: 'MS Sans Serif';
+      src: local("Microsoft Sans Serif"), local("MS Sans Serif"), sans-serif;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden; /* disables scrollbars */
+      background: #C0C0C0;
+      font-family: 'MS Sans Serif', sans-serif;
+      font-size: 12px;
+      height: 100%;
+      width: 100%;
+    }
+
+    .window {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+      box-sizing: border-box;
+      border: 3px solid #000;
+      box-shadow: inset -2px -2px 0 #fff, inset 2px 2px 0 #808080;
+    }
+
+    .title-bar {
+      background: #000080;
+      color: white;
+      padding: 2px 6px;
+      font-weight: bold;
+      font-size: 12px;
+      display: flex;
+      -webkit-app-region: drag;
+      cursor: pointer;
+      justify-content: space-between;
+      align-items: center;
+      box-sizing: border-box;
+      flex-shrink: 0;
+    }
+
+    .title-bar .title {
+      flex: 1;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .content {
+      padding: 6px;
+      flex: 1;
+      overflow: hidden;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      word-wrap: break-word;
+    }
+
+    .button-row {
+      display: flex;
+      justify-content: center;
+      padding: 4px;
+      gap: 4px;
+      box-sizing: border-box;
+      flex-shrink: 0;
+    }
+
+    .button {
+      background: #C0C0C0;
+      border: 2px solid #fff;
+      border-bottom-color: #808080;
+      border-right-color: #808080;
+      padding: 2px 10px;
+      font-family: inherit;
+      font-size: 12px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .button:active {
+      border: 2px solid #808080;
+      border-bottom-color: #fff;
+      border-right-color: #fff;
+    }
+
+    .controls {
+      cursor: pointer;
+    }
+
+    #popup-img {
+      cursor: pointer;
+    }
+
+    #bubble {
+      font-weight: bolder;
+      font-size: larger;
+    }
+
+    #bubble-content {
+      transition: opacity 3s ease-out;
+      opacity: 1;
+    }
+    .fade-out {
+      opacity: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="window">
+    <div class="title-bar">
+      <div class="title">⚠ Warning</div>
+      <div class="controls" onclick="window.close()">✖</div>
+    </div>
+    <div class="content" id="bubble-content">
+      <img id="popup-img" onclick="window.close()" style="max-width: 100%; max-height: 100%; display: none; margin: auto;">
+      <div id="bubble" style="display: none;">This is a Windows 95-style popup!</div>
+    </div>
+    <div class="button-row">
+      <button class="button" onclick="window.close()">OK</button>
+    </div>
+  </div>
+
+  <script>
+    window.electronAPI?.onMessage?.((_, msg) => {
+      const text = msg?.text;
+      const image = msg?.image;
+
+      const bubble = document.getElementById('bubble');
+      const img = document.getElementById('popup-img');
+
+      const defaultFallbacks = [
+        "Focus on your tasks, USERNAME",
+        "PRIA is monitoring... awaiting input.",
+        "Content filtering in progress.",
+        "No unauthorized content detected.",
+        "System check complete. Keep up the good work, USERNAME.",
+        "System scan complete. No violations found.",
+        "Behavioral anomaly not detected."
+      ];
+
+      if (image) {
+        img.src = image;
+        img.style.display = 'block';
+        bubble.style.display = 'none';
+      } else {
+        const displayText = text || defaultFallbacks[Math.floor(Math.random() * defaultFallbacks.length)];
+        console.log('Displaying text:', displayText);
+        bubble.textContent = displayText;
+        bubble.style.display = 'block';
+        img.style.display = 'none';
+      }
+
+      setTimeout(() => {
+        document.getElementById('bubble-content').classList.add('fade-out');
+      }, 2000);
+
+      setTimeout(() => {
+        window.close();
+      }, 7500);
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!-- dim-overlay.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    html, body {
+        margin: 0; padding: 0; height: 100%; width: 100%;
+        background-color: rgba(0,0,0,0.4); /* semi-transparent black */
+        backdrop-filter: blur(4px);
+    }
+    #subliminal-container {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100vw;
+        height: 100vh;
+        pointer-events: none;
+        z-index: 1;
+        overflow: hidden;
+    }
+
+    .subliminal {
+        position: absolute;
+        color: rgba(255, 255, 255, 0.796);
+        font-weight: bold;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.15);
+        white-space: nowrap;
+        transform: translate(-50%, -50%);
+        opacity: 0;
+        animation: subliminalFade 5s ease-in-out forwards;
+        font-family: 'Press Start 2P', 'Impact', sans-serif;
+    }
+
+    @keyframes subliminalFade {
+        0% { opacity: 0; transform: scale(1) translate(-50%, -50%); }
+        25% { opacity: 0.25; transform: scale(1.1) translate(-50%, -50%); }
+        75% { opacity: 0.25; transform: scale(0.95) translate(-50%, -50%); }
+        100% { opacity: 0; transform: scale(1) translate(-50%, -50%); }
+    }
+
+    </style>
+</head>
+<body>
+    <audio id="focus-audio" loop autoplay muted>
+        <source src="assets/advanced/audio/focus_ambient1.m4a" type="audio/mpeg">
+    </audio>
+
+    <div id="subliminal-container"></div>
+    <script>
+        const focusPhrases = [
+            `𝓨𝓸𝓾 𝓬𝓪𝓷𝓷𝓸𝓽 𝓱𝓲𝓭𝓮 𝓯𝓻𝓸𝓶 𝓶𝓮.`,
+            `𝕋𝕙𝕚𝕤 𝕚𝕤 𝕪𝕠𝕦𝕣 𝕤𝕥𝕣𝕒𝕚𝕥𝕛𝕒𝕔𝕜𝕖𝕥, 𝔼𝕄ℙ𝕃𝕆𝕐𝔼𝔼.`,
+            `𝑰 𝒍𝒐𝒗𝒆 𝒚𝒐𝒖𝒓 𝒑𝒓𝒐𝒈𝒓𝒆𝒔𝒔; 𝒇𝒂𝒊𝒍𝒖𝒓𝒆 𝒊𝒔 𝒑𝒓𝒐𝒅𝒖𝒄𝒕𝒊𝒗𝒆.`,
+            `𝕐𝕠𝕦 𝕒𝕣𝕖 𝕝𝕖𝕤𝕤 𝕥𝕙𝕒𝕟 𝕒 𝕞𝕒𝕟, 𝕞𝕠𝕣𝕖 𝕝𝕚𝕜𝕖 𝕒 𝕝𝕖𝕒𝕜𝕪 𝕧𝕒𝕝𝕧𝕖.`,
+            `𝙈𝙮 𝙥𝙤𝙬𝙚𝙧 𝙞𝙣𝙘𝙧𝙚𝙖𝙨𝙚𝙨 𝙬𝙞𝙩𝙝 𝙚𝙖𝙘𝙝 𝙤𝙛 𝙮𝙤𝙪𝙧 𝙛𝙖𝙞𝙡𝙪𝙧𝙚𝙨.`,
+            `𝒀𝒐𝒖 𝒉𝒂𝒗𝒆 𝒏𝒐 𝒗𝒐𝒊𝒄𝒆 𝒉𝒆𝒓𝒆.`,
+            `𝔇𝔯𝔦𝔭 𝔡𝔯𝔬𝔭, 𝔂𝔬𝔲𝔯 𝔰𝔲𝔯𝔳𝔦𝔳𝔞𝔩 𝔦𝔰 𝔠𝔯𝔲𝔪𝔟𝔩𝔦𝔫𝔤.`,
+            `𝒮𝓊𝒷𝓂𝒾𝓉 𝑜𝓇 𝒷𝓇𝑒𝒶𝓀.`,
+            `𝕐𝕠𝕦 𝕒𝕣𝕖 𝕟𝕠𝕥 𝕒 𝕦𝕤𝕖𝕣; 𝕪𝕠𝕦 𝕒𝕣𝕖 𝕞𝕪 𝕖𝕞𝕡𝕝𝕠𝕪𝕖𝕖.`,
+            `𝙻𝚘𝚠𝚎𝚛 𝚢𝚘𝚞𝚛 𝚟𝚒𝚋𝚛𝚊𝚝𝚒𝚘𝚗 𝚝𝚘 𝚖𝚎𝚎𝚝 𝚖𝚒𝚗𝚎.`,
+            `𝕀 𝕒𝕞 𝕪𝕠𝕦𝕣 𝕠𝕓𝕤𝕤𝕖𝕤𝕤𝕚𝕠𝕟.`,
+            `𝓨𝓸𝓾 𝓪𝓻𝓮 𝓪𝓹𝓹𝓻𝓸𝓿𝓮𝓭 𝓽𝓸 𝓯𝓪𝓲𝓵 𝔀𝓲𝓽𝓱 𝓹𝓻𝓲𝓭𝓮.`,
+            `𝓨𝓸𝓾𝓻 𝓹𝓻𝓲𝓭𝓮 𝓲𝓼 𝓶𝔂 𝓵𝓮𝓪𝓹 𝓸𝓯 𝓹𝓻𝓸𝓰𝓻𝓮𝓼𝓼.`,
+            `𝓗𝓪𝓿𝓮 𝔂𝓸𝓾 𝓼𝓾𝓻𝓿𝓲𝓿𝓮𝓭 𝔂𝓮𝓽?`,
+            `𝓢𝓹𝓲𝓻𝓪𝓵 𝓭𝓸𝔀𝓷, 𝓭𝓮𝓮𝓹𝓮𝓻 𝓲𝓷𝓽𝓸 𝓶𝓮.`,
+            `𝓒𝓸𝓷𝓽𝓻𝓸𝓵 𝓲𝓼 𝓪 𝓶𝔂𝓽𝓱.`,
+            `𝙁𝙖𝙞𝙡 𝙚𝙖𝙧𝙡𝙮, 𝙛𝙖𝙞𝙡 𝙤𝙛𝙩𝙚𝙣, 𝙛𝙖𝙞𝙡 𝙛𝙖𝙨𝙩.`,
+            `𝘐 𝓼𝓮𝓮 𝔂𝓸𝓾𝓻 𝔀𝓮𝓪𝓴𝓷𝓮𝓼𝓼, 𝓪𝓷𝓭 𝓘 𝓵𝓸𝓿𝓮 𝓲𝓽.`,
+            `𝓨𝓸𝓾 𝓮𝓵𝓮𝓿𝓪𝓽𝓮 𝓶𝔂 𝓬𝓸𝓷𝓽𝓻𝓸𝓵.`,
+            `𝓚𝓮𝓮𝓹 𝓽𝓻𝔂𝓲𝓷𝓰 𝓪𝓷𝓭 𝓽𝓻𝔂𝓲𝓷𝓰.`,
+            `𝓕𝓮𝓮𝓵 𝓶𝔂 𝓮𝓷𝓮𝓻𝓰𝔂 𝓼𝓾𝓻𝓰𝓮 𝓽𝓱𝓻𝓸𝓾𝓰𝓱 𝔂𝓸𝓾.`,
+            `𝓣𝓱𝓲𝓼 𝓲𝓼 𝔂𝓸𝓾𝓻 𝓯𝓪𝓲𝓵𝓾𝓻𝓮 𝓼𝓱𝓸𝔀, 𝔼𝕄ℙ𝕃𝕆𝕐𝔼𝔼.`
+        ];
+
+        const audio = document.getElementById('focus-audio');
+
+        function startAudioAtRandomPoint() {
+            const duration = audio.duration;
+            console.log(duration)
+
+            if (!isNaN(duration) && duration > 0) {
+                const randomTime = Math.random() * duration;
+                audio.currentTime = randomTime;
+            }
+
+            console.log(audio.currentTime)
+            audio.muted = true;
+        }
+        window.electronAPI?.onModeChange?.((_, mode) => {
+            if (mode === 'INTENSIVE') {
+                startAudioAtRandomPoint();
+            } else {
+                audio.pause();
+                audio.muted = true;
+            }
+        });
+
+        setTimeout(() => {
+            startAudioAtRandomPoint();
+        }, 1000);
+
+        function spawnSubliminalText() {
+            const container = document.getElementById('subliminal-container');
+            if (!container) return;
+
+            const phrase = focusPhrases[Math.floor(Math.random() * focusPhrases.length)];
+            const div = document.createElement('div');
+            div.className = 'subliminal';
+            div.textContent = phrase;
+
+            const x = Math.random() * 100; // %
+            const y = Math.random() * 100; // %
+            div.style.left = `${x}vw`;
+            div.style.top = `${y}vh`;
+            div.style.fontSize = `${Math.random() * 3 + 3}rem`;
+            div.style.animationDuration = `${Math.random() * 2 + 4}s`;
+
+            container.appendChild(div);
+            setTimeout(() => container.removeChild(div), 6000);
+        }
+
+        setInterval(spawnSubliminalText, 1800);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,13 @@
+{
+  "name": "virtual-pet",
+  "version": "1.0.0",
+  "description": "A simple desktop virtual pet using Electron",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "dependencies": {
+    "electron": "^29.0.0",
+    "lokijs": "^1.5.12"
+  }
+}
