@@ -44,7 +44,3 @@ The application includes various media assets:
 - **Images**: Overlay images and visual content
 - **Audio**: Background audio and sound effects
 - **Text**: Dynamic text messages and notifications
-
----
-
-*PRIA - A virtual pet companion for desktop environments*
